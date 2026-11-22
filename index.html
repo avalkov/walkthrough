@@ -12,8 +12,8 @@
     if (!k) return say('This link is incomplete. Please ask the sender for the full link.');
     var raw = Uint8Array.from(atob(k.replace(/-/g, '+').replace(/_/g, '/')), function (ch) { return ch.charCodeAt(0); });
     var key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
-    var res = await fetch('w.bin?v=4588255-51e88bc08e4e0c90e4965f93'); if (!res.ok) throw new Error('download failed');
-    var total = 4588255, got = 0, parts = [], rd = res.body.getReader();
+    var res = await fetch('w.bin?v=4588548-f6e1a1ea58e6793557b6251c'); if (!res.ok) throw new Error('download failed');
+    var total = 4588548, got = 0, parts = [], rd = res.body.getReader();
     for (;;) { var r = await rd.read(); if (r.done) break; parts.push(r.value); got += r.value.length; say('Loading… ' + Math.min(99, Math.round(got / total * 100)) + ' %'); }
     var buf = new Uint8Array(got), o = 0; parts.forEach(function (p) { buf.set(p, o); o += p.length; });
     var plain;
