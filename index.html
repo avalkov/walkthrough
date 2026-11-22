@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><meta name="referrer" content="no-referrer"><title>Private page</title>
+<style>html,body{height:100%;margin:0;background:#12161c;color:#dfe5ea;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+#m{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}</style></head>
+<body><div id="m">Loading…</div>
+<script>
+(async function () {
+  var m = document.getElementById('m'), say = function (t) { m.textContent = t; };
+  try {
+    var k = location.hash.slice(1).split('&')[0];
+    if (!k) return say('This link is incomplete. Please ask the sender for the full link.');
+    var raw = Uint8Array.from(atob(k.replace(/-/g, '+').replace(/_/g, '/')), function (ch) { return ch.charCodeAt(0); });
+    var key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+    var res = await fetch('w.bin?v=4581895-e4746743c4db0b5e29547a4e'); if (!res.ok) throw new Error('download failed');
+    var total = 4581895, got = 0, parts = [], rd = res.body.getReader();
+    for (;;) { var r = await rd.read(); if (r.done) break; parts.push(r.value); got += r.value.length; say('Loading… ' + Math.min(99, Math.round(got / total * 100)) + ' %'); }
+    var buf = new Uint8Array(got), o = 0; parts.forEach(function (p) { buf.set(p, o); o += p.length; });
+    var plain;
+    try { plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.subarray(0, 12) }, key, buf.subarray(12)); }
+    catch (e) { return say('This link is not valid. Please ask the sender for the full link.'); }
+    var page = await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+    document.open(); document.write(page); document.close();
+  } catch (e) { say('Could not open the page (' + (e && e.message || e) + '). Please try a current version of Chrome, Edge, Safari or Firefox.'); }
+})();
+</script></body></html>
